@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Hasil Soal - Smart Edu</title>
+
+<style>
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    margin: 0;
+    padding: 30px;
+    align-items: center;
+    color: #333;
+    display :flex
+    
+}
+
+.container {
+    background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                padding: 40px;
+                max-width: 500px;
+                width: 100%;
+                margin: 0  auto;
+}
+
+.header {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    color: #667eea;
+}
+
+.badge {
+    display: inline-block;
+    background: #667eea;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.materi-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 30px;
+    margin-bottom: 30px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-line;
+    border-left: 1px solid #667eea;
+}
+
+.question-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.question-number {
+    width: 35px;
+    height: 35px;
+    background: #667eea;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 35px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.options li {
+    background: #f4f6ff;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 10px;
+    list-style: none;
+}
+
+.answer-btn {
+    margin-top: 15px;
+    padding: 10px 18px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.answer-box {
+    display: none;
+    margin-top: 15px;
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #4caf50;
+}
+
+details {
+    margin-top: 10px;
+}
+
+details summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #667eea;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <h1>📝 Soal Berhasil Dibuat</h1>
+    <div class="badge">Jenis Soal: {{ jenis_soal|replace('_',' ')|title }}</div>
+</div>
+
+<h3 style="color:white">📘 Materi Pembahasan</h3>
+
+<button class="answer-btn" onclick="toggleMateri()"
+        style="background:#4caf50;#11ff00; margin-bottom:15px;">
+    📖 Lihat Materi
+</button>
+
+<div id="materi-box" class="materi-box" style="display:none;">
+{% if materi %}
+{{ materi }}
+{% endif %}
+</div>
+
+
+{% for q in questions %}
+<div class="question-card">
+
+    <div class="question-number">{{ loop.index }}</div>
+
+    <p><strong>{{ q.question }}</strong></p>
+
+    {% if q.type == 'pg' %}
+    <ul class="options">
+        {% for opt in q.options %}
+        <li>{{ 'ABCD'[loop.index0] }}. {{ opt }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <button class="answer-btn" onclick="toggleAnswer({{ loop.index }})">
+        👁️ Lihat Jawaban
+    </button>
+
+    <div id="answer-{{ loop.index }}" class="answer-box">
+        <strong>Jawaban:</strong><br>
+        {{ q.answer }}
+
+        {% if q.materi %}
+        <details>
+            <summary>📖 Materi Terkait</summary>
+            <p>{{ q.materi }}</p>
+        </details>
+        {% endif %}
+    </div>
+
+</div>
+{% endfor %}
+
+<!-- ================== ACTION BUTTONS ================== -->
+<hr style="margin:40px 0">
+
+<div style="text-align:center; margin-bottom:30px; border-radius: 20px;">
+
+    <a href="/download"
+       style="
+        background:#667eea;
+        color:white;
+        padding:14px 32px;
+        border-radius:10px;
+        text-decoration:none;
+        margin-right:15px;
+        font-weight:bold;
+        display:inline-block;
+       ">
+        📄 Export PDF
+    </a>
+
+    <a href="/"
+       style="
+        background:#4caf50;
+        color:white;
+        padding:14px 32px;
+        border-radius:10px;
+        text-decoration:none;
+        font-weight:bold;
+        display:inline-block;
+       ">
+        🔄 Generate Soal Kembali
+    </a>
+
+</div>
+<!-- ==================================================== -->
+
+</div> <!-- END CONTAINER -->
+</div>
+
+<script>
+function toggleAnswer(i) {
+    const el = document.getElementById("answer-" + i);
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+function toggleAnswer(i) {
+    const el = document.getElementById("answer-" + i);
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+function toggleMateri() {
+    const box = document.getElementById("materi-box");
+    const btn = event.target;
+
+    if (box.style.display === "none") {
+        box.style.display = "block";
+        btn.innerText = "❌ Tutup Materi";
+    } else {
+        box.style.display = "none";
+        btn.innerText = "📖 Lihat Materi";
+    }
+}
+</script>
+
+</body>
+</html>
