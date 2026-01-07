@@ -27,23 +27,25 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
-
-# Pakai folder lokal untuk data NLTK (penting untuk Railway)
-NLTK_DATA_DIR = os.path.join(os.path.dirname(__file__), "nltk_data")
+# Folder lokal NLTK (AMAN untuk Railway)
+NLTK_DATA_DIR = "/app/nltk_data"
 os.makedirs(NLTK_DATA_DIR, exist_ok=True)
-nltk.data.path.append(NLTK_DATA_DIR)
 
-# Cek & download resource yang diperlukan
-for resource, locator in [
-    ("punkt", "tokenizers/punkt"),
-    ("stopwords", "corpora/stopwords"),
-]:
+if NLTK_DATA_DIR not in nltk.data.path:
+    nltk.data.path.append(NLTK_DATA_DIR)
+
+# Semua resource yang dipakai
+RESOURCE_PATHS = {
+    "punkt": "tokenizers/punkt",
+    "punkt_tab": "tokenizers/punkt_tab",
+    "stopwords": "corpora/stopwords"
+}
+
+for res, path in RESOURCE_PATHS.items():
     try:
-        nltk.data.find(locator)
+        nltk.data.find(path)
     except LookupError:
-        nltk.download(resource, download_dir=NLTK_DATA_DIR)
-
-
+        nltk.download(res, download_dir=NLTK_DATA_DIR)
 
 app = Flask(__name__)
 
@@ -563,8 +565,5 @@ def internal_error(e):
         500,
     )
 
-
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=5000)
